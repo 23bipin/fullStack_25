@@ -3,12 +3,14 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import contactService from './services/persons'
+import Notification from './components/errorNotif'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchName, setSearchName] = useState('')
+  const [notification, setNotification] = useState({message: null, type: null})
   
   useEffect(() => {
     contactService
@@ -49,11 +51,21 @@ const App = () => {
         console.log(returnedContact)
         setNewName('')
         setNewNumber('')
+        setNotification({
+          message: `Added ${returnedContact.name}`,
+          type:'success'
+        })
+
+        setTimeout(() => {
+          setNotification({ message:null, type:null })
+        }, 5000)
       })
   }
 }
 
-    const deletePerson = (id) => {
+    const deletePerson = (event, id) => {
+      event.preventDefault()
+
     const person = persons.find(person => person.id === id)
     const confirmDelete = window.confirm(`Delete '${person.name}' ?`)
 
@@ -62,9 +74,22 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
+          setNotification({
+            message: `Deleted ${person.name}`,
+            type:'success'
+          })
+          setTimeout(() => {
+            setNotification({ message:null, type: null })
+          }, 5000)
         })
         .catch(error => {
-          alert("This person may have already been removed.")
+          setNotification({
+            message: `Information of ${person.name} has already been removed from server`,
+            type: 'error'
+          })
+          setTimeout(() => {
+            setNotification({ message:null, type: null })
+          }, 5000)
           setPersons(persons.filter(person => person.id !== id))
         })
     }
@@ -89,6 +114,7 @@ const App = () => {
       <form>
         <div>
             <h2>Phonebook</h2>
+            <Notification notification={notification} />
           <Filter
             searchName={searchName}
             handleSearchChange={(e) => setSearchName(e.target.value)}
