@@ -22,7 +22,7 @@ let notes = [
 app.use(express.json())
 
 app.get('/', (request, response) => {
-    response.send('<h1>Wugabuaga world!</h1>')
+    response.send('<h1>Hello world!</h1>')
 })
 
 app.get('/api/notes', (request, response) => {
@@ -74,7 +74,7 @@ app.delete('/api/notes/:id', (request, response) => {
     response.status(204).end()
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
 console.log(`Server running on port ${PORT}`)
 })
