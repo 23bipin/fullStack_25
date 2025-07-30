@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 .frontend/
-frontend
+frontend/
