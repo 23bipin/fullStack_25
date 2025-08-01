@@ -77,6 +77,25 @@ app.delete('/api/notes/:id', (request, response) => {
 
   response.status(204).end()
 })
+app.put('/api/notes/:id', (request, response) => {
+  const id = request.params.id
+  const body = request.body
+
+  const noteIndex = notes.findIndex(note => note.id === id)
+  if (noteIndex === -1) {
+    return response.status(404).json({ error: 'note not found' })
+  }
+
+  const updatedNote = {
+    ...notes[noteIndex],
+    important: body.important,
+    content: body.content // optional if you want to allow content edits too
+  }
+
+  notes[noteIndex] = updatedNote
+
+  response.json(updatedNote)
+})
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
