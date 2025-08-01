@@ -1,6 +1,11 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
+
+app.use(cors())
+app.use(express.static('dist')) 
+app.use(express.json())
 
 let persons = [
     { 
@@ -24,8 +29,6 @@ let persons = [
       "number": "39-23-6423122"
     }
 ]
-
-app.use(express.json())
 
 morgan.token('body', (req) => {
     return (req.method === 'POST')
@@ -63,7 +66,6 @@ const generatedId = () => {
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
-
     if(!body.name || !body.number) {
         return response.status(400).json({
             error: 'name or number missing'
@@ -79,9 +81,7 @@ app.post('/api/persons', (request, response) => {
         number: body.number,
         id: generatedId(),
     }
-
     persons = persons.concat(person)
-
     response.json(person)
 })
 
@@ -92,19 +92,35 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', (request, response) => {
     const total = persons.length
     const date = new Date()
 
-    res.send(`
+    response.send(`
         <p> Phonebook has info for ${total} people </p>
         <p> ${date} </p>
         `)
 })
 
+app.put('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    const body = request.body
 
+    const personIndex = persons.findIndex(person => person.id === id)
+    if (personIndex === -1) {
+        return response.status(404).json({error: 'contact not found'})
+    }
 
-const PORT = 3002
+    const updatedPerson = {
+        ...persons[personIndex],
+        name: body.name,
+        number: body.number,
+    }
+    persons[personIndex] = updatedPerson
+    response.json(updatedPerson)
+})
+
+const PORT = process.env.PORT||3002
 app.listen(PORT, () => {
     console.log(`Server runni8ng on port ${PORT}`)
 })
