@@ -93,15 +93,9 @@ app.put('/api/persons/:id', (req, res, next) => {
 
 // DELETE A CONTACT ===================
 app.delete('/api/persons/:id', (req, res, next) => {
-  Person.findByIdAndDelete(id)
-    .then(result => {
-      if (result) {
-        res.status(204).end()
-      } else {
-        res.status(404).send({ error: 'contact not found' })
-      }
-    })
-    .catch(error => next(error))
+  Person.findByIdAndDelete(req.params.id)
+    .then(() => res.status(204).end())
+    .catch(error => next(error)) 
 })
 
 // INFO ==========================

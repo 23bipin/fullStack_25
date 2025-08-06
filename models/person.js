@@ -14,9 +14,13 @@ mongoose.set('strictQuery', false)
             required: true,
             validate: {
                 validator: function (v) {
-                    return /^\d{2,3}-\d{6,7}$/.test(v)
+                    const formatOK = /^\d{2,3}-\d+$/.test(v);
+                    const digitsOnly = v.replace('-', '');
+                    const digitCountOK = digitsOnly.length >= 8;
+
+                    return formatOK && digitCountOK;
                 },
-                message: props => `${props.value} is not a valid phone number! Format must be xx-xxxxxx, xxx-xxxxx`
+                message: props => `${props.value} is not a valid phone number! Format must be xx-xxxxxx..., xxx-xxxxx..`
             }
         }
     })
